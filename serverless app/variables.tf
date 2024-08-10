@@ -26,3 +26,9 @@ variable "domain_name" {
     error_message = "Invalid domain name. It must be a valid domain name."
   }
 }
+
+variable "service_domain" {
+  type        = string
+  description = "The service domain"
+  default     = "api-todos"
+}
