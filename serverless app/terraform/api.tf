@@ -162,3 +162,22 @@ resource "aws_api_gateway_account" "this" {
 
   cloudwatch_role_arn = aws_iam_role.apigw_send_logs_cw[0].arn
 }
+
+# CORS
+resource "aws_api_gateway_method" "cors" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.todos.id
+  authorization = "NONE"
+  http_method   = "OPTIONS"
+}
+
+resource "aws_api_gateway_integration" "cors" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  resource_id = aws_api_gateway_resource.todos.id
+  http_method = aws_api_gateway_method.cors.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
