@@ -63,3 +63,31 @@ module "iam_role_s3_lambda" {
     }
   ]
 }
+
+module "iam_role_sqs_lambda" {
+  source = "./modules/iam"
+
+  iam_role_name   = "${local.namespaced_service_name}-s3-sqs-role"
+  iam_policy_name = "${local.namespaced_service_name}-s3-sqs-execute-policy"
+
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+
+  create_log_perms_for_lambda = true
+
+  permissions = [
+    {
+      sid = "AllowSQSAndDynamoDBActions"
+      actions = [
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:ReceiveMessage",
+        "sqs:GetQueueAttributes",
+        "dynamodb:PutItem",
+      ]
+      resources = [
+        "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/${aws_dynamodb_table.this.name}",
+        "arn:aws:sqs:${var.aws_region}:${local.account_id}:${aws_sqs_queue.this.name}",
+      ]
+    }
+  ]
+}
