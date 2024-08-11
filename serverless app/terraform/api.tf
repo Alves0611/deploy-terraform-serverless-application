@@ -50,3 +50,25 @@ resource "aws_api_gateway_method" "todo" {
     "method.request.path.todoId" = true
   }
 }
+
+resource "aws_api_gateway_integration" "todos" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.todos.id
+  http_method             = aws_api_gateway_method.todos.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = module.lambda_dynamodb.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "todo" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.todo.id
+  http_method             = aws_api_gateway_method.todo.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = module.lambda_dynamodb.invoke_arn
+
+  request_parameters = {
+    "integration.request.path.todoId" = "method.request.path.todoId"
+  }
+}
