@@ -59,4 +59,25 @@ variable "cors_allow_methods" {
   ]
 }
 
+variable "cors_allow_origins" {
+  description = "Allowed origin(s) for CORS requests"
+  type        = string
+  default     = "*"
+}
 
+variable "cors_allow_credentials" {
+  description = "Whether to set the credentials or not"
+  type        = string
+  default     = "false"
+
+  validation {
+    condition     = contains(["true", "false"], var.cors_allow_credentials)
+    error_message = "CORs allow credentials only accept 'true' or 'false'"
+  }
+}
+
+variable "create_logs_for_apigw" {
+  type        = bool
+  description = "Whether to create and send logs from API GW to Cloudwatch"
+  default     = false
+}
