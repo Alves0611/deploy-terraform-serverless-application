@@ -136,3 +136,22 @@ resource "aws_api_gateway_stage" "this" {
 
   }
 }
+
+resource "aws_api_gateway_domain_name" "this" {
+  count = local.create_resource_based_on_domain_name
+
+  domain_name              = aws_acm_certificate.api[0].domain_name
+  regional_certificate_arn = aws_acm_certificate_validation.api[0].certificate_arn
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+resource "aws_api_gateway_base_path_mapping" "this" {
+  count = local.create_resource_based_on_domain_name
+
+  api_id      = aws_api_gateway_rest_api.this.id
+  domain_name = aws_api_gateway_domain_name.this[0].domain_name
+  stage_name  = aws_api_gateway_stage.this.stage_name
+}
