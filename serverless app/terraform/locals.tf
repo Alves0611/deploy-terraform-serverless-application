@@ -15,6 +15,12 @@ locals {
     gsi_sort_key  = "Done"
   }
 
+  formatted_cors = {
+    headers     = "'${join(",", var.cors_allow_headers)}'"
+    methods     = "'${join(",", var.cors_allow_methods)}'"
+    origins     = "'${var.cors_allow_origins}'"
+    credentials = "'${var.cors_allow_credentials}'"
+  }
 
   common_tags = {
     "Module"    = "Static website"
