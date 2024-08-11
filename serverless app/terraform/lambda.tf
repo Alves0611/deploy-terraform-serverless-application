@@ -24,6 +24,8 @@ data "archive_file" "codebase" {
   output_path = "files/${random_uuid.build_id.result}.zip"
 }
 
+# --------------- LAMBDA INFRA --------------------
+
 module "lambda_s3" {
   source = "./modules/lambda"
 
@@ -100,4 +102,27 @@ module "lambda_sqs" {
 
     AWS_NODEJS_CONNECTION_REUSE_ENABLED = 1
   }
+}
+
+# --------------- LAMBDA TRIGGERS --------------------
+
+resource "aws_lambda_permission" "apigw" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_dynamodb.name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.this.execution_arn}/*"
+}
+
+resource "aws_lambda_permission" "s3" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_s3.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.todo.arn
+}
+
+resource "aws_lambda_event_source_mapping" "lambda_sqs" {
+  function_name    = module.lambda_sqs.name
+  event_source_arn = aws_sqs_queue.this.arn
 }
