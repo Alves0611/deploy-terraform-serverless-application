@@ -17,3 +17,32 @@ resource "aws_sqs_queue_policy" "this" {
   queue_url = aws_sqs_queue.this.id
   policy    = data.aws_iam_policy_document.sqs_sns_policy.json
 }
+
+data "aws_iam_policy_document" "sqs_sns_policy" {
+  statement {
+    sid    = "AllowSNSPublishToSQS"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+
+    actions = [
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage"
+    ]
+
+    resources = [
+      aws_sqs_queue.this.arn
+    ]
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values = [
+        aws_sns_topic.this.arn
+      ]
+    }
+  }
+}
