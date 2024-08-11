@@ -108,3 +108,31 @@ resource "aws_api_gateway_deployment" "this" {
     create_before_destroy = true
   }
 }
+
+resource "aws_api_gateway_stage" "this" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  deployment_id = aws_api_gateway_deployment.this.id
+  stage_name    = var.environment
+
+  dynamic "access_log_settings" {
+    for_each = var.create_logs_for_apigw ? [1] : []
+
+    content {
+      destination_arn = aws_cloudwatch_log_group.api_gw_logs[0].arn
+      format = jsonencode({
+        requestId         = "$context.requestId",
+        extendedRequestId = "$context.extendedRequestId",
+        ip                = "$context.identity.sourceIp",
+        caller            = "$context.identity.caller",
+        user              = "$context.identity.user",
+        requestTime       = "$context.requestTime",
+        httpMethod        = "$context.httpMethod",
+        resourcePath      = "$context.resourcePath",
+        status            = "$context.status",
+        protocol          = "$context.protocol",
+        responseLength    = "$context.responseLength"
+      })
+    }
+
+  }
+}
