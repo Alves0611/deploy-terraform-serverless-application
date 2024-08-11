@@ -155,3 +155,10 @@ resource "aws_api_gateway_base_path_mapping" "this" {
   domain_name = aws_api_gateway_domain_name.this[0].domain_name
   stage_name  = aws_api_gateway_stage.this.stage_name
 }
+
+# Logs
+resource "aws_api_gateway_account" "this" {
+  count = var.create_logs_for_apigw ? 1 : 0
+
+  cloudwatch_role_arn = aws_iam_role.apigw_send_logs_cw[0].arn
+}
