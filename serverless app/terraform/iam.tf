@@ -38,3 +38,28 @@ module "iam_role_dynamodb_lambda" {
     }
   ]
 }
+
+module "iam_role_s3_lambda" {
+  source = "./modules/iam"
+
+  iam_role_name   = "${local.namespaced_service_name}-s3-lambda-role"
+  iam_policy_name = "${local.namespaced_service_name}-s3-lambda-execute-policy"
+
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+
+  create_log_perms_for_lambda = true
+
+  permissions = [
+    {
+      sid = "AllowS3AndSNSActions"
+      actions = [
+        "s3:GetObject",
+        "sns:Publish",
+      ]
+      resources = [
+        "arn:aws:s3:::${aws_s3_bucket.todo.id}/*",
+        "arn:aws:sns:${var.aws_region}:${local.account_id}:${aws_sns_topic.this.name}",
+      ]
+    }
+  ]
+}
