@@ -8,3 +8,12 @@ resource "aws_sqs_queue" "this" {
     maxReceiveCount     = 4 # number of retries before sending to dlq
   })
 }
+
+resource "aws_sqs_queue" "this_dlq" {
+  name = "${local.namespaced_service_name}-dlq"
+}
+
+resource "aws_sqs_queue_policy" "this" {
+  queue_url = aws_sqs_queue.this.id
+  policy    = data.aws_iam_policy_document.sqs_sns_policy.json
+}
