@@ -3,6 +3,7 @@ locals {
   namespaced_service_name = "${var.service_name}-${var.environment}"
 
   has_domain_name = var.domain_name != null
+  create_resource_based_on_domain_name = local.has_domain_name ? 1 : 0
 
   lambdas_path = "lambdas"
   code_path    = "${path.module}/../src"
