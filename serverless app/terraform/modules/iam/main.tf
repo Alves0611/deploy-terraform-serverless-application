@@ -32,3 +32,18 @@ data "aws_iam_policy_document" "this" {
     }
   }
 }
+
+resource "aws_iam_role" "this" {
+  name               = var.iam_role_name
+  assume_role_policy = var.assume_role_policy
+}
+
+resource "aws_iam_policy" "this" {
+  name   = var.iam_policy_name
+  policy = data.aws_iam_policy_document.this.json
+}
+
+resource "aws_iam_role_policy_attachment" "this" {
+  policy_arn = aws_iam_policy.this.arn
+  role       = aws_iam_role.this.name
+}
