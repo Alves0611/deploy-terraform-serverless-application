@@ -259,3 +259,35 @@ resource "aws_api_gateway_integration_response" "cors_todo" {
 
   depends_on = [aws_api_gateway_integration.cors_todo]
 }
+
+resource "aws_api_gateway_gateway_response" "cors_4xx" {
+  response_type = "DEFAULT_4XX"
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+
+  response_templates = {
+    "application/json" = "{\"message\":$context.error.messageString}"
+  }
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Headers"     = local.formatted_cors.headers
+    "gatewayresponse.header.Access-Control-Allow-Methods"     = local.formatted_cors.methods
+    "gatewayresponse.header.Access-Control-Allow-Origin"      = local.formatted_cors.origins
+    "gatewayresponse.header.Access-Control-Allow-Credentials" = local.formatted_cors.credentials
+  }
+}
+
+resource "aws_api_gateway_gateway_response" "cors_5xx" {
+  response_type = "DEFAULT_5XX"
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+
+  response_templates = {
+    "application/json" = "{\"message\":$context.error.messageString}"
+  }
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Headers"     = local.formatted_cors.headers
+    "gatewayresponse.header.Access-Control-Allow-Methods"     = local.formatted_cors.methods
+    "gatewayresponse.header.Access-Control-Allow-Origin"      = local.formatted_cors.origins
+    "gatewayresponse.header.Access-Control-Allow-Credentials" = local.formatted_cors.credentials
+  }
+}
