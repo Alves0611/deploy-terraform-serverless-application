@@ -181,3 +181,33 @@ resource "aws_api_gateway_integration" "cors" {
     "application/json" = "{\"statusCode\": 200}"
   }
 }
+
+resource "aws_api_gateway_method_response" "cors" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  resource_id = aws_api_gateway_resource.todos.id
+  http_method = aws_api_gateway_method.cors.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Credentials" = true
+    "method.response.header.Access-Control-Allow-Headers"     = false
+    "method.response.header.Access-Control-Allow-Methods"     = false
+    "method.response.header.Access-Control-Allow-Origin"      = false
+  }
+}
+
+resource "aws_api_gateway_integration_response" "cors" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  resource_id = aws_api_gateway_resource.todos.id
+  http_method = aws_api_gateway_method.cors.http_method
+  status_code = aws_api_gateway_method_response.cors.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers"     = local.formatted_cors.headers
+    "method.response.header.Access-Control-Allow-Methods"     = local.formatted_cors.methods
+    "method.response.header.Access-Control-Allow-Origin"      = local.formatted_cors.origins
+    "method.response.header.Access-Control-Allow-Credentials" = local.formatted_cors.credentials
+  }
+
+  depends_on = [aws_api_gateway_integration.cors]
+}
