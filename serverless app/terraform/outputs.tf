@@ -21,3 +21,11 @@ output "lambda_dynamo_invoke_url" {
 output "lambda_sqs_invoke_url" {
   value = module.lambda_sqs.invoke_arn
 }
+
+output "api_url" {
+  value = aws_api_gateway_deployment.this.invoke_url
+}
+
+output "bucket_name_lambda_artefacts" {
+  value = aws_s3_bucket.lambda_artefacts.bucket
+}
