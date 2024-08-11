@@ -32,3 +32,31 @@ variable "service_domain" {
   description = "The service domain"
   default     = "api-todos"
 }
+
+variable "cors_allow_headers" {
+  description = "List of allowed headers for CORS requests"
+  type        = list(string)
+  default = [
+    "Content-Type",
+    "X-Amz-Date",
+    "Authorization",
+    "X-Api-Key",
+    "X-Amz-Security-Token"
+  ]
+}
+
+variable "cors_allow_methods" {
+  description = "List of allowed methods for CORS requests"
+  type        = list(string)
+  default = [
+    "DELETE",
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+  ]
+}
+
+
