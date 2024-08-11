@@ -75,3 +75,29 @@ module "lambda_dynamodb" {
     AWS_NODEJS_CONNECTION_REUSE_ENABLED = 1
   }
 }
+
+module "lambda_sqs" {
+  source = "./modules/lambda"
+
+  name            = "${local.namespaced_service_name}-sqs"
+  description     = "Triggered by SQS to save data into DynamoDB"
+  handler         = "${local.lambdas_path}/sqs.handler"
+  iam_role_arn    = module.iam_role_sqs_lambda.iam_role_arn
+  timeout_in_secs = 15
+  memory_in_mb    = 256
+  code_hash       = data.archive_file.codebase.output_base64sha256
+
+  s3_config = {
+    bucket = aws_s3_bucket.lambda_artefacts.bucket
+    key    = aws_s3_object.lambda_artefact.key
+  }
+
+  env_vars = {
+    JWT_SECRET = aws_cognito_user_pool_client.this.id
+    TABLE_NAME = aws_dynamodb_table.this.name
+    GSI_NAME   = local.dynamodb_config.gsi_name
+    DEBUG      = var.environment == "dev"
+
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED = 1
+  }
+}
