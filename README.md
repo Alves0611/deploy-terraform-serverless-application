@@ -10,7 +10,7 @@ This project implements a serverless architecture that includes both a backend a
 ## Architecture
 
 ### Backend
-![alt text](<images/architecture.drawio.svg>)
+![alt text](images/architecture.drawio.svg)
 
 - **Route 53**: Manages the routing of requests to the API.
 - **API Gateway**: Entry point for requests, responsible for routing, authenticating via Cognito, and forwarding to Lambda functions.
